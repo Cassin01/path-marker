@@ -12,3 +12,11 @@ cargo install path-maker
 path-marker -- mark # marks current path
 path-marker -- show # show all paths that was marked
 ```
+
+## Changing directory using fuzzy find.
+
+```sh
+function cdm {
+  cd `path-marker -- show | peco`
+}
+```
