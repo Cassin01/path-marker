@@ -96,7 +96,7 @@ fn show(_args: Cli) -> Result<(), BErr> {
     let hist =  get_hist_path()?;
     if std::path::Path::new(&hist).exists() {
         let contents = std::fs::read_to_string(hist)?;
-        for line in contents.lines() {
+        for line in contents.lines().rev() {
             println!("{}", line);
         }
     }
