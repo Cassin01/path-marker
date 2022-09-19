@@ -1,5 +1,11 @@
 # path-marker
 
+## Installation
+
+```sh
+cargo install path-maker
+```
+
 ## Usage
 
 ```sh
