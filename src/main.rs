@@ -4,17 +4,70 @@ use std::env;
 use std::io::Write;
 use std::path::PathBuf;
 use std::os::unix::ffi::OsStrExt;
+use std::collections::HashMap;
+use std::io::Read;
+use std::io::prelude::*;
+extern crate confy;
 
-fn add2file(path: &[u8], hist: &str) -> Result<(), BErr> {
-    let mut file = std::fs::OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(hist)?;
-    file.write_all(path)?; //.expect_err("Failed to write");
-    file.write_all(b"\n")?; //.expect_err("Failed to write");
-    Ok(())
+extern crate serde_derive;
+use serde_derive::{Serialize, Deserialize};
+macro_rules! post_inc {
+    ($i:ident) => {
+        {
+            let old = $i;
+            $i += 1;
+            old
+        }
+    };
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct ConfyConfig {
+    history_max_size: usize,
+}
+impl Default for ConfyConfig {
+    fn default() -> Self {
+        ConfyConfig {
+            history_max_size: 10
+        }
+    }
+}
+
+fn head_border(len:usize, d:usize) -> usize {
+    if len  < d {
+        0
+    } else {
+        len - d
+    }
+}
+fn enqueue(path: &[u8], hist: &str, cfg: ConfyConfig) -> Result<(), BErr> {
+    let mut file = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(hist)?;
+
+    let mut contents = String::new();
+    file.rewind()?;
+    file.read_to_string(&mut contents)?;
+
+    let path_str = std::str::from_utf8(path)?;
+    let mut contents_list = contents.lines().collect::<Vec<_>>();
+    contents_list.push(path_str);
+
+    let mut cnt = 0;
+    let contents_set = contents_list.into_iter().map(|x| (x, post_inc!(cnt))).collect::<HashMap<&str, usize>>();
+
+    let mut contents_list = contents_set.into_iter().collect::<Vec<(&str, usize)>>();
+    contents_list.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+
+    let contents_sliced = &contents_list[head_border(contents_list.len(), cfg.history_max_size)..];
+
+    let contents_buf = contents_sliced.into_iter().map(|x| x.0).collect::<Vec<&str>>().join("\n");
+
+    file.rewind()?;
+    file.write_all(contents_buf.as_bytes())?; //.expect_err("Failed to write");
+    Ok(())
+}
 
 #[derive(Parser)]
 struct Cli {
@@ -29,13 +82,13 @@ pub fn path_buf_to_u8_slice_unix(input: &PathBuf) -> &[u8] {
     input.as_os_str().as_bytes()
 }
 
-fn mark(_args: Cli) -> Result<(), BErr> {
+fn mark(_args: Cli, cfg: ConfyConfig) -> Result<(), BErr> {
     let path = env::current_dir()?;
     let hist =  get_hist_path()?;
     if ! std::path::Path::new(&hist).exists() {
         create_hist(&hist)?;
     }
-    add2file(path_buf_to_u8_slice_unix(&path), &hist)?;
+    enqueue(path_buf_to_u8_slice_unix(&path), &hist, cfg)?;
     Ok(())
 }
 
@@ -64,11 +117,21 @@ fn get_hist_path() -> Result<String, BErr> {
     Ok(hist)
 }
 
+fn conf(cfg: ConfyConfig) -> Result<(), BErr> {
+    let file = confy::get_configuration_file_path("path-marker", None)?;
+    println!("The configuration file path is: {:#?}", file);
+    println!("The configuration is:");
+    println!("{:#?}", cfg);
+    Ok(())
+}
+
 fn main() -> Result<(), BErr> {
+    let cfg:ConfyConfig = confy::load("path-marker", None)?;
     let args = Cli::parse();
     match &*args.pattern {
-        "mark" => mark(args),
+        "mark" => mark(args, cfg),
         "show" => show(args),
+        "conf" => conf(cfg),
         _ => panic!("There was a problem reading arguments")
     }
 }
