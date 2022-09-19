@@ -11,6 +11,7 @@ cargo install path-maker
 ```sh
 path-marker -- mark # marks current path
 path-marker -- show # shows all paths that were marked
+path-marker -- conf # shows a configuration info.
 ```
 
 ```zsh
