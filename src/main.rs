@@ -53,7 +53,6 @@ fn show(_args: Cli) -> Result<(), BErr> {
 fn create_hist(hist: &str) -> Result<(), BErr> {
     let path = std::path::Path::new(hist);
     let prefix = path.parent().unwrap();
-    // println!("{:?}",prefix);
     std::fs::create_dir_all(prefix)?;
     std::fs::File::create(path)?;
     Ok(())
