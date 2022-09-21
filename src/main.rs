@@ -42,7 +42,6 @@ fn head_border(len: usize, d: usize) -> usize {
 fn enqueue(path: &[u8], hist: &str, cfg: ConfyConfig) -> Result<(), BErr> {
     let mut file = std::fs::OpenOptions::new()
         .read(true)
-        .write(true)
         .open(hist)?;
 
     let mut contents = String::new();
@@ -69,6 +68,11 @@ fn enqueue(path: &[u8], hist: &str, cfg: ConfyConfig) -> Result<(), BErr> {
         .map(|x| x.0)
         .collect::<Vec<&str>>()
         .join("\n");
+
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(hist)?;
 
     file.rewind()?;
     file.write_all(contents_buf.as_bytes())?; //.expect_err("Failed to write");
