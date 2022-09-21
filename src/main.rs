@@ -40,12 +40,9 @@ fn head_border(len: usize, d: usize) -> usize {
     }
 }
 fn enqueue(path: &[u8], hist: &str, cfg: ConfyConfig) -> Result<(), BErr> {
-    let mut file = std::fs::OpenOptions::new()
-        .read(true)
-        .open(hist)?;
-
-    let mut contents = String::new();
+    let mut file = std::fs::OpenOptions::new().read(true).open(hist)?;
     file.rewind()?;
+    let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
     let path_str = std::str::from_utf8(path)?;
@@ -73,9 +70,9 @@ fn enqueue(path: &[u8], hist: &str, cfg: ConfyConfig) -> Result<(), BErr> {
         .write(true)
         .truncate(true)
         .open(hist)?;
-
     file.rewind()?;
-    file.write_all(contents_buf.as_bytes())?; //.expect_err("Failed to write");
+    file.write_all(contents_buf.as_bytes())?;
+
     Ok(())
 }
 
