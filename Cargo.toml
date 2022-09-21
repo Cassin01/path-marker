@@ -1,10 +1,10 @@
 [package]
 name = "path-marker"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 authors = ["Cassin01"]
 license = "MIT OR Apache-2.0"
-description = "A tool to search files"
+description = "A tool to book mark paths"
 readme = "README.md"
 homepage = "https://github.com/Cassin01/path-marker"
 repository = "https://github.com/Casin01/path-marker"
