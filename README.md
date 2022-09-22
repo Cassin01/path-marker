@@ -17,9 +17,9 @@ cargo uninstall path-marker
 
 2. remove configuration file will be automatically generated on:
 
-- Linux: `~/.config/rcz`
-- Windows: `{FOLDERID_RoamingAppData}\rcz`
-- Mac OS: `~/Library/Preferences/rs.rcz`
+- Linux: `~/.config/path-marker`
+- Windows: `{FOLDERID_RoamingAppData}\path-marker`
+- Mac OS: `~/Library/Preferences/rs.path-marker`
 
 3. remove `~/.cache/path_marker/hist.txt`
 
