@@ -38,8 +38,10 @@ path-marker -- conf # shows a configuration info.
 
 ```zsh
 # Changing directory using fuzzy find.
-function cdm {
-  cd `path-marker -- show | peco`
+function cdm() {
+  if local output=$(path-marker -- show); then
+    echo "${output}" | peco
+  fi
 }
 alias mp='path-marker -- mark'
 # alias ms='path-marker -- show'
