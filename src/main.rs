@@ -201,11 +201,11 @@ fn main() -> Result<(), BErr> {
     let cfg: ConfyConfig = confy::load("path-marker", None)?;
     let args = Cli::parse();
     match args.pattern {
-        Patt::Mark => mark(args, cfg),
-        Patt::Show => show(args),
-        Patt::Conf => conf(cfg),
-        Patt::Clean => clean(),
-        Patt::Edit => edit(),
-        Patt::HistPath => hist_path(),
+        Patt::Mark => mark(args, cfg), // mark the current
+        Patt::Show => show(args), // show the history
+        Patt::Conf => conf(cfg), // print the configuration
+        Patt::Clean => clean(), // clean the history
+        Patt::Edit => edit(), // open the history
+        Patt::HistPath => hist_path(), // print the path of the history file
     }
 }
