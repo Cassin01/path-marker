@@ -87,7 +87,8 @@ arg_enum! {
         Show,
         Conf,
         Clean,
-        Edit
+        Edit,
+        HistPath,
     }
 }
 
@@ -190,6 +191,12 @@ fn edit() -> Result<(), BErr> {
     Ok(())
 }
 
+fn hist_path() -> Result<(), BErr> {
+    let hist = get_hist_path()?;
+    println!("{}", hist);
+    Ok(())
+}
+
 fn main() -> Result<(), BErr> {
     let cfg: ConfyConfig = confy::load("path-marker", None)?;
     let args = Cli::parse();
@@ -199,5 +206,6 @@ fn main() -> Result<(), BErr> {
         Patt::Conf => conf(cfg),
         Patt::Clean => clean(),
         Patt::Edit => edit(),
+        Patt::HistPath => hist_path(),
     }
 }
